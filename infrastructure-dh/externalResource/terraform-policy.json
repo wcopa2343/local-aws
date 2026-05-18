@@ -1,0 +1,94 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "LambdaScoped",
+      "Effect": "Allow",
+      "Action": ["lambda:*"],
+      "Resource": [
+        "arn:aws:lambda:*:*:function:generateThumbnails*",
+        "arn:aws:lambda:*:*:function:SET-*-Doodle-*",
+        "arn:aws:lambda:*:*:layer:layer-thumbnail-*"
+      ]
+    },
+    {
+      "Sid": "LambdaEventSourceMapping",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateEventSourceMapping",
+        "lambda:DeleteEventSourceMapping",
+        "lambda:GetEventSourceMapping",
+        "lambda:ListEventSourceMappings",
+        "lambda:UpdateEventSourceMapping"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "S3Scoped",
+      "Effect": "Allow",
+      "Action": ["s3:*"],
+      "Resource": [
+        "arn:aws:s3:::s3-demo-sds-dh-*",
+        "arn:aws:s3:::s3-demo-sds-dh-*/*"
+      ]
+    },
+    {
+      "Sid": "SQSScoped",
+      "Effect": "Allow",
+      "Action": ["sqs:*"],
+      "Resource": [
+        "arn:aws:sqs:*:*:doodle-*",
+        "arn:aws:sqs:*:*:pdf-converter-*"
+      ]
+    },
+    {
+      "Sid": "ECRScoped",
+      "Effect": "Allow",
+      "Action": ["ecr:*"],
+      "Resource": "arn:aws:ecr:*:*:repository/pdf-converter-*"
+    },
+    {
+      "Sid": "ECRAuthToken",
+      "Effect": "Allow",
+      "Action": ["ecr:GetAuthorizationToken"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "IAMScoped",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:PassRole",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:TagRole"
+      ],
+      "Resource": "arn:aws:iam::*:role/role-dh-lambda-*"
+    },
+    {
+      "Sid": "CloudWatchLogs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:DeleteLogGroup",
+        "logs:DescribeLogGroups",
+        "logs:ListTagsLogGroup",
+        "logs:PutRetentionPolicy"
+      ],
+      "Resource": "arn:aws:logs:*:*:log-group:/aws/lambda/*"
+    },
+    {
+      "Sid": "STSCallerIdentity",
+      "Effect": "Allow",
+      "Action": ["sts:GetCallerIdentity"],
+      "Resource": "*"
+    }
+  ]
+}
