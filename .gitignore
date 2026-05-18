@@ -1,9 +1,28 @@
+# Credenciales y configuración local
 .env
 .aws/credentials
 
-# Terraform
-infrastructure-dh/.terraform/
-infrastructure-dh/.terraform.lock.hcl
+# IDEs
+.vscode/
+.idea/
+
+# Logs y temporales
+*.log
+*.tmp
+*.bak
+
+# Terraform — estado (nunca a git)
 infrastructure-dh/terraform.tfstate
 infrastructure-dh/terraform.tfstate.backup
-infrastructure-dh/*.tfvars
+infrastructure-dh/**/*.tfstate
+infrastructure-dh/**/*.tfstate.backup
+
+# Terraform — directorio de providers descargados
+infrastructure-dh/.terraform/
+infrastructure-dh/**/.terraform/
+
+# Terraform — lock file (se regenera en cada init dentro del contenedor)
+infrastructure-dh/.terraform.lock.hcl
+
+# Terraform — placeholder ZIP generado automáticamente por data archive_file
+infrastructure-dh/modules/compute/placeholder.zip

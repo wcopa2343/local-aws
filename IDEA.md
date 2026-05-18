@@ -22,11 +22,10 @@ localStack-aws/
 │   ├── variables.tf
 │   ├── outputs.tf
 │   └── terraform.tfvars.example
-├── scripts/
-│   ├── apply.sh                    ← Mac/Linux
-│   ├── apply.bat                   ← Windows
-│   ├── destroy.sh
-│   └── destroy.bat
+├── readme/
+│   ├── IDEA.md
+│   ├── INFRASTRUCTURE_DH.md
+│   └── MANUAL.md
 └── .aws/
     ├── config
     └── credentials                 ← solo para modo AWS real, ignorado en git
