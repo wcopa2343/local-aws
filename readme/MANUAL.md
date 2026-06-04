@@ -1,8 +1,8 @@
-# Manual — LocalStack Dev Environment
+# Manual — Floci Dev Environment
 
 ## Requisitos
 - Docker Desktop corriendo
-- Archivo `.env` configurado (copiar de `.env.example` y poner `LOCALSTACK_AUTH_TOKEN`)
+- Archivo `.env` configurado (copiar de `.env.example`)
 
 ---
 
@@ -13,17 +13,17 @@ LocalStack no persiste infraestructura entre reinicios. Cada vez que levantes el
 ### Paso 1 — Levantar los contenedores
 
 ```bash
-# Modo LocalStack (devs)
-docker-compose --profile localstack up
+# Modo Floci (devs)
+docker-compose --profile floci up
 
 # Modo AWS real (staging/prod)
 docker-compose up -d
 ```
 
-Espera a que LocalStack esté healthy antes de continuar:
+Espera a que Floci esté healthy antes de continuar:
 ```bash
-docker-compose logs -f localstack
-# Espera ver: "Ready." en los logs
+docker-compose logs -f floci
+# Espera ver que el healthcheck pasa
 ```
 
 ### Paso 2 — Crear la infraestructura con Terraform
@@ -43,10 +43,10 @@ docker-compose exec terraform sh -c "terraform init && terraform apply -auto-app
 
 ## Uso diario (contenedores ya corriendo)
 
-Si los contenedores ya están levantados y la infraestructura ya fue creada, solo necesitas levantar LocalStack:
+Si los contenedores ya están levantados y la infraestructura ya fue creada, solo necesitas levantar Floci:
 
 ```bash
-docker-compose --profile localstack up
+docker-compose --profile floci up
 ```
 
 No es necesario volver a correr `terraform apply` a menos que hayas bajado los contenedores con `docker-compose down` o hayas cambiado código Terraform.
@@ -56,11 +56,11 @@ No es necesario volver a correr `terraform apply` a menos que hayas bajado los c
 ## Destruir la infraestructura
 
 ```bash
-# LocalStack
+# Floci
 docker-compose exec terraform sh -c "terraform destroy -auto-approve -var-file=environments/dev/terraform.tfvars"
 
 # Bajar los contenedores
-docker-compose --profile localstack down
+docker-compose --profile floci down
 ```
 
 ---
@@ -96,27 +96,27 @@ docker-compose run --rm aws-cli sqs get-queue-url \
 
 # Enviar mensaje a la cola de thumbnails desde imagen
 docker-compose run --rm aws-cli sqs send-message \
-  --queue-url http://localstack:4566/000000000000/doodle-dev-generateThumbnailsFromImage \
+  --queue-url http://floci:4566/000000000000/doodle-dev-generateThumbnailsFromImage \
   --message-body '{"key": "imagen.jpg", "bucket": "s3-demo-sds-dh-dev"}'
 
 # Enviar mensaje a la cola de thumbnails desde pdf
 docker-compose run --rm aws-cli sqs send-message \
-  --queue-url http://localstack:4566/000000000000/doodle-dev-generateThumbnailsFromPdf \
+  --queue-url http://floci:4566/000000000000/doodle-dev-generateThumbnailsFromPdf \
   --message-body '{"key": "documento.pdf", "bucket": "s3-demo-sds-dh-dev"}'
 
 # Enviar mensaje a la cola de conversión HTML
 docker-compose run --rm aws-cli sqs send-message \
-  --queue-url http://localstack:4566/000000000000/pdf-converter-dev-html-conversion-queue \
+  --queue-url http://floci:4566/000000000000/pdf-converter-dev-html-conversion-queue \
   --message-body '{"key": "pagina.html", "bucket": "s3-demo-sds-dh-dev"}'
 
 # Enviar mensaje a la cola de conversión Office
 docker-compose run --rm aws-cli sqs send-message \
-  --queue-url http://localstack:4566/000000000000/pdf-converter-dev-office-conversion-queue \
+  --queue-url http://floci:4566/000000000000/pdf-converter-dev-office-conversion-queue \
   --message-body '{"key": "documento.docx", "bucket": "s3-demo-sds-dh-dev"}'
 
 # Ver mensajes en una cola (sin consumirlos)
 docker-compose run --rm aws-cli sqs receive-message \
-  --queue-url http://localstack:4566/000000000000/doodle-dev-generateThumbnailsFromImage
+  --queue-url http://floci:4566/000000000000/doodle-dev-generateThumbnailsFromImage
 ```
 
 ---
@@ -161,43 +161,43 @@ docker-compose run --rm aws-cli logs filter-log-events \
 # Listar repositorios
 docker-compose run --rm aws-cli ecr describe-repositories
 
-# Login al registry de LocalStack
+# Login al registry de Floci
 aws ecr get-login-password --region us-east-1 | \
   docker login --username AWS --password-stdin \
-  000000000000.dkr.ecr.us-east-1.localhost.localstack.cloud:4566
+  000000000000.dkr.ecr.us-east-1.localhost.floci.cloud:4566
 
 # Tag y push de imagen al repo html
 docker tag mi-imagen:latest \
-  000000000000.dkr.ecr.us-east-1.localhost.localstack.cloud:4566/pdf-converter-dev/document.conversion.html:latest
+  000000000000.dkr.ecr.us-east-1.localhost.floci.cloud:4566/pdf-converter-dev/document.conversion.html:latest
 
 docker push \
-  000000000000.dkr.ecr.us-east-1.localhost.localstack.cloud:4566/pdf-converter-dev/document.conversion.html:latest
+  000000000000.dkr.ecr.us-east-1.localhost.floci.cloud:4566/pdf-converter-dev/document.conversion.html:latest
 
 # Tag y push de imagen al repo office
 docker tag mi-imagen:latest \
-  000000000000.dkr.ecr.us-east-1.localhost.localstack.cloud:4566/pdf-converter-dev/document.conversion.office:latest
+  000000000000.dkr.ecr.us-east-1.localhost.floci.cloud:4566/pdf-converter-dev/document.conversion.office:latest
 
 docker push \
-  000000000000.dkr.ecr.us-east-1.localhost.localstack.cloud:4566/pdf-converter-dev/document.conversion.office:latest
+  000000000000.dkr.ecr.us-east-1.localhost.floci.cloud:4566/pdf-converter-dev/document.conversion.office:latest
 
 # Actualizar image_uri de lambda Docker C después del push (paso Jenkins)
 docker-compose run --rm aws-cli lambda update-function-code \
   --function-name SET-dev-Doodle-ConvertHtmlToPdf \
-  --image-uri 000000000000.dkr.ecr.us-east-1.localhost.localstack.cloud:4566/pdf-converter-dev/document.conversion.html:latest
+  --image-uri 000000000000.dkr.ecr.us-east-1.localhost.floci.cloud:4566/pdf-converter-dev/document.conversion.html:latest
 
 # Actualizar image_uri de lambda Docker D después del push (paso Jenkins)
 docker-compose run --rm aws-cli lambda update-function-code \
   --function-name SET-dev-Doodle-ConvertMsDocToPdf \
-  --image-uri 000000000000.dkr.ecr.us-east-1.localhost.localstack.cloud:4566/pdf-converter-dev/document.conversion.office:latest
+  --image-uri 000000000000.dkr.ecr.us-east-1.localhost.floci.cloud:4566/pdf-converter-dev/document.conversion.office:latest
 ```
 
 ---
 
-## Verificar estado de LocalStack
+## Verificar estado de Floci
 
 ```bash
 # Health check
-curl http://localhost:4566/_localstack/health
+curl http://localhost:4566/health
 
 # Ver todos los recursos creados
 docker-compose run --rm aws-cli resourcegroupstaggingapi get-resources
@@ -246,7 +246,7 @@ docker-compose run --rm aws-cli lambda invoke \
 
 ## Actualizar image_uri de Lambdas Docker (C y D) — solo AWS real
 
-ECR no está disponible en el plan actual de LocalStack, aplica únicamente cuando `TARGET_ENV=aws`.
+Aplica únicamente cuando `TARGET_ENV=aws`.
 
 El flujo es: `docker build` + `docker push` al ECR, luego actualizar el `image_uri` via aws-cli.
 

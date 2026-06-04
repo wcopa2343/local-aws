@@ -1,22 +1,20 @@
 services:
 
-  localstack:
-    image: localstack/localstack-pro:latest
+  floci:
+    image: floci/floci:latest
     ports:
       - "4566:4566"
-      - "4510-4559:4510-4559"
     environment:
-      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:-}
       - SERVICES=s3,sqs,lambda,ecr,iam
       - LAMBDA_EXECUTOR=docker
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - localstack-data:/var/lib/localstack
+      - floci-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     profiles:
-      - localstack
+      - floci
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:4566/ || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -31,12 +29,12 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-test}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-test}
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
-      - TARGET_ENV=${TARGET_ENV:-localstack}
-      - TF_ENDPOINT=${TF_ENDPOINT:-http://localstack:4566}
+      - TARGET_ENV=${TARGET_ENV:-floci}
+      - TF_ENDPOINT=${TF_ENDPOINT:-http://floci:4566}
     profiles:
-      - localstack
+      - floci
     depends_on:
-      localstack:
+      floci:
         condition: service_healthy
     entrypoint: ["/bin/sh"]
     command: ["-c", "while true; do sleep 30; done"]
@@ -51,8 +49,10 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-test}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-test}
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
-      - AWS_ENDPOINT_URL=${TF_ENDPOINT:-http://localstack:4566}
-    entrypoint: ["aws"]
+      - AWS_ENDPOINT_URL=${TF_ENDPOINT:-http://floci:4566}
+    # entrypoint: ["/bin/sh"]
+    # tty: true
+    # stdin_open: true
 
 volumes:
-  localstack-data:
+  floci-data:

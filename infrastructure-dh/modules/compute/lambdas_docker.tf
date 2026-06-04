@@ -1,5 +1,4 @@
 resource "aws_lambda_function" "convert_html_to_pdf" {
-  count         = var.target_env != "localstack" ? 1 : 0
   function_name = "SET-${var.environment}-Doodle-ConvertHtmlToPdf"
   role          = var.lambda_execution_role_arn
   package_type  = "Image"
@@ -22,14 +21,12 @@ resource "aws_lambda_function" "convert_html_to_pdf" {
 }
 
 resource "aws_lambda_event_source_mapping" "html_trigger" {
-  count            = var.target_env != "localstack" ? 1 : 0
   event_source_arn = var.sqs_arns["html_conversion"]
-  function_name    = aws_lambda_function.convert_html_to_pdf[0].arn
+  function_name    = aws_lambda_function.convert_html_to_pdf.arn
   batch_size       = 10
 }
 
 resource "aws_lambda_function" "convert_msdoc_to_pdf" {
-  count         = var.target_env != "localstack" ? 1 : 0
   function_name = "SET-${var.environment}-Doodle-ConvertMsDocToPdf"
   role          = var.lambda_execution_role_arn
   package_type  = "Image"
@@ -52,8 +49,7 @@ resource "aws_lambda_function" "convert_msdoc_to_pdf" {
 }
 
 resource "aws_lambda_event_source_mapping" "office_trigger" {
-  count            = var.target_env != "localstack" ? 1 : 0
   event_source_arn = var.sqs_arns["office_conversion"]
-  function_name    = aws_lambda_function.convert_msdoc_to_pdf[0].arn
+  function_name    = aws_lambda_function.convert_msdoc_to_pdf.arn
   batch_size       = 10
 }

@@ -16,13 +16,13 @@ variable "aws_region" {
 }
 
 variable "target_env" {
-  description = "Target environment provider: localstack or aws"
+  description = "Target environment provider: floci or aws"
   type        = string
-  default     = "localstack"
+  default     = "floci"
 }
 
 variable "tf_endpoint" {
-  description = "LocalStack endpoint URL (empty for AWS real)"
+  description = "floci endpoint URL (empty for AWS real)"
   type        = string
-  default     = "http://localstack:4566"
+  default     = "http://floci:4566"
 }

@@ -1,21 +1,21 @@
-# LocalStack AWS Dev Environment
+# Floci AWS Dev Environment
 
-Entorno local de desarrollo AWS usando LocalStack, Terraform y AWS CLI orquestados con Docker Compose.
+Entorno local de desarrollo AWS usando [Floci](https://floci.io/aws/), Terraform y AWS CLI orquestados con Docker Compose.
 
 ## Cómo funciona
 
-El switch entre LocalStack y AWS real se controla con `TARGET_ENV` en el `.env`:
+El switch entre Floci y AWS real se controla con `TARGET_ENV` en el `.env`:
 
 | `TARGET_ENV` | Descripción |
 |---|---|
-| `localstack` | Levanta LocalStack, Terraform apunta a `http://localstack:4566` |
-| `staging` / `prod` | No levanta LocalStack, Terraform apunta a AWS real |
+| `floci` | Levanta Floci, Terraform apunta a `http://floci:4566` |
+| `staging` / `prod` | No levanta Floci, Terraform apunta a AWS real |
 
 ## Estructura
 
 ```
 localStack-aws/
-├── docker-compose.yml        ← orquesta LocalStack, Terraform y AWS CLI
+├── docker-compose.yml        ← orquesta Floci, Terraform y AWS CLI
 ├── .env.example              ← copia esto a .env y llena tus valores
 ├── .aws/                     ← credenciales AWS real (solo modo aws)
 ├── infrastructure-dh/        ← código Terraform
@@ -30,10 +30,9 @@ localStack-aws/
 ```bash
 # 1. Configurar el entorno
 cp .env.example .env
-# editar .env: poner LOCALSTACK_AUTH_TOKEN
 
 # 2. Levantar contenedores
-docker-compose --profile localstack up -d
+docker-compose --profile floci up -d
 
 # 3. Crear infraestructura
 docker-compose exec terraform sh -c "terraform init && terraform apply -auto-approve -var-file=environments/dev/terraform.tfvars"

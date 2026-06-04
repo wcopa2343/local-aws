@@ -1,8 +1,8 @@
-# Guía de uso — Spring Boot + LocalStack
+# Guía de uso — Spring Boot + Floci
 
-## 1. Conectar Spring Boot a LocalStack
+## 1. Conectar Spring Boot a Floci
 
-El SDK de AWS para Java permite sobreescribir el endpoint por servicio. Cuando `TARGET_ENV=localstack`, apuntas todo a `http://localhost:4566` con credenciales fake.
+El SDK de AWS para Java permite sobreescribir el endpoint por servicio. Cuando `TARGET_ENV=floci`, apuntas todo a `http://localhost:4566` con credenciales fake.
 
 ### Dependencias (pom.xml)
 
@@ -38,7 +38,7 @@ El SDK de AWS para Java permite sobreescribir el endpoint por servicio. Cuando `
 ### application.properties
 
 ```properties
-# LocalStack
+# Floci
 aws.endpoint=http://localhost:4566
 aws.region=us-east-1
 aws.accessKey=test
@@ -46,8 +46,8 @@ aws.secretKey=test
 
 # Nombres de recursos
 aws.s3.bucket=s3-demo-sds-dh-dev
-aws.sqs.thumbnailImage=http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/doodle-dev-generateThumbnailsFromImage
-aws.sqs.thumbnailPdf=http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/doodle-dev-generateThumbnailsFromPdf
+aws.sqs.thumbnailImage=http://sqs.us-east-1.localhost.floci.cloud:4566/000000000000/doodle-dev-generateThumbnailsFromImage
+aws.sqs.thumbnailPdf=http://sqs.us-east-1.localhost.floci.cloud:4566/000000000000/doodle-dev-generateThumbnailsFromPdf
 ```
 
 ### Configuración de los clientes AWS (AwsConfig.java)
@@ -104,7 +104,7 @@ public class AwsConfig {
 }
 ```
 
-> `forcePathStyle(true)` en S3 es obligatorio para LocalStack — mismo motivo que el `s3_use_path_style` en Terraform.
+> `forcePathStyle(true)` en S3 es obligatorio para Floci — mismo motivo que el `s3_use_path_style` en Terraform.
 
 ### Ejemplo — subir archivo a S3
 
@@ -148,7 +148,7 @@ public class QueueService {
 }
 ```
 
-### Switch LocalStack ↔ AWS real en Spring Boot
+### Switch Floci ↔ AWS real en Spring Boot
 
 Para no hardcodear el endpoint, usa profiles de Spring:
 

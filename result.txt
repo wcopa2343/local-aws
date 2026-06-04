@@ -1,0 +1,177 @@
+diff --git a/infrastructure-dh/modules/compute/lambdas_docker.tf b/infrastructure-dh/modules/compute/lambdas_docker.tf
+index 58eee36..511a4c1 100644
+--- a/infrastructure-dh/modules/compute/lambdas_docker.tf
++++ b/infrastructure-dh/modules/compute/lambdas_docker.tf
+@@ -1,5 +1,4 @@
+ resource "aws_lambda_function" "convert_html_to_pdf" {
+-  count         = var.target_env != "floci" ? 1 : 0
+   function_name = "SET-${var.environment}-Doodle-ConvertHtmlToPdf"
+   role          = var.lambda_execution_role_arn
+   package_type  = "Image"
+@@ -22,14 +21,12 @@ resource "aws_lambda_function" "convert_html_to_pdf" {
+ }
+ 
+ resource "aws_lambda_event_source_mapping" "html_trigger" {
+-  count            = var.target_env != "floci" ? 1 : 0
+   event_source_arn = var.sqs_arns["html_conversion"]
+-  function_name    = aws_lambda_function.convert_html_to_pdf[0].arn
++  function_name    = aws_lambda_function.convert_html_to_pdf.arn
+   batch_size       = 10
+ }
+ 
+ resource "aws_lambda_function" "convert_msdoc_to_pdf" {
+-  count         = var.target_env != "floci" ? 1 : 0
+   function_name = "SET-${var.environment}-Doodle-ConvertMsDocToPdf"
+   role          = var.lambda_execution_role_arn
+   package_type  = "Image"
+@@ -52,8 +49,7 @@ resource "aws_lambda_function" "convert_msdoc_to_pdf" {
+ }
+ 
+ resource "aws_lambda_event_source_mapping" "office_trigger" {
+-  count            = var.target_env != "floci" ? 1 : 0
+   event_source_arn = var.sqs_arns["office_conversion"]
+-  function_name    = aws_lambda_function.convert_msdoc_to_pdf[0].arn
++  function_name    = aws_lambda_function.convert_msdoc_to_pdf.arn
+   batch_size       = 10
+ }
+diff --git a/infrastructure-dh/modules/compute/outputs.tf b/infrastructure-dh/modules/compute/outputs.tf
+index 798387c..67d2296 100644
+--- a/infrastructure-dh/modules/compute/outputs.tf
++++ b/infrastructure-dh/modules/compute/outputs.tf
+@@ -2,7 +2,7 @@ output "lambda_arns" {
+   value = {
+     generate_thumbnails_from_image = aws_lambda_function.generate_thumbnails_from_image.arn
+     generate_thumbnails_from_pdf   = aws_lambda_function.generate_thumbnails_from_pdf.arn
+-    convert_html_to_pdf            = var.target_env != "floci" ? aws_lambda_function.convert_html_to_pdf[0].arn : ""
+-    convert_msdoc_to_pdf           = var.target_env != "floci" ? aws_lambda_function.convert_msdoc_to_pdf[0].arn : ""
++    convert_html_to_pdf            = aws_lambda_function.convert_html_to_pdf.arn
++    convert_msdoc_to_pdf           = aws_lambda_function.convert_msdoc_to_pdf.arn
+   }
+ }
+diff --git a/infrastructure-dh/modules/compute/variables.tf b/infrastructure-dh/modules/compute/variables.tf
+index b0b72ae..6c8109e 100644
+--- a/infrastructure-dh/modules/compute/variables.tf
++++ b/infrastructure-dh/modules/compute/variables.tf
+@@ -1,6 +1,6 @@
+ variable "target_env" {
+   type    = string
+-  default = "flocix"
++  default = "floci"
+ }
+ 
+ variable "environment" {
+diff --git a/infrastructure-dh/modules/registry/ecr.tf b/infrastructure-dh/modules/registry/ecr.tf
+index 629c10b..0c5ae1e 100644
+--- a/infrastructure-dh/modules/registry/ecr.tf
++++ b/infrastructure-dh/modules/registry/ecr.tf
+@@ -1,12 +1,10 @@
+ resource "aws_ecr_repository" "html_conversion" {
+-  count        = var.target_env != "floci" ? 1 : 0
+   name         = "pdf-converter-${var.environment}/document.conversion.html"
+   force_delete = true
+   tags         = var.common_tags
+ }
+ 
+ resource "aws_ecr_repository" "office_conversion" {
+-  count        = var.target_env != "floci" ? 1 : 0
+   name         = "pdf-converter-${var.environment}/document.conversion.office"
+   force_delete = true
+   tags         = var.common_tags
+diff --git a/infrastructure-dh/modules/registry/outputs.tf b/infrastructure-dh/modules/registry/outputs.tf
+index ca24f79..0847d2d 100644
+--- a/infrastructure-dh/modules/registry/outputs.tf
++++ b/infrastructure-dh/modules/registry/outputs.tf
+@@ -1,6 +1,6 @@
+ output "ecr_urls" {
+   value = {
+-    html_conversion   = var.target_env != "floci" ? aws_ecr_repository.html_conversion[0].repository_url : ""
+-    office_conversion = var.target_env != "floci" ? aws_ecr_repository.office_conversion[0].repository_url : ""
++    html_conversion   = aws_ecr_repository.html_conversion.repository_url
++    office_conversion = aws_ecr_repository.office_conversion.repository_url
+   }
+ }
+diff --git a/result.txt b/result.txt
+index 71da1a0..1121893 100644
+--- a/result.txt
++++ b/result.txt
+@@ -1,80 +0,0 @@
+-{
+-    "Functions": [
+-        {
+-            "FunctionName": "generateThumbnailsFromImage-dev",
+-            "FunctionArn": "arn:aws:lambda:us-east-1:000000000000:function:generateThumbnailsFromImage-dev",
+-            "Runtime": "python3.10",
+-            "Role": "arn:aws:iam::000000000000:role/role-dh-lambda-dev",
+-            "Handler": "index.lambda_handler",
+-            "CodeSize": 229,
+-            "Description": "",
+-            "Timeout": 300,
+-            "MemorySize": 512,
+-            "LastModified": "2026-05-30T05:59:17.256+0000",
+-            "CodeSha256": "fRJhRWZPxxQx+sHBQJp0f+O8KeMnsWJXIPliV1lYyNM=",
+-            "Version": "$LATEST",
+-            "Environment": {
+-                "Variables": {
+-                    "ENVIRONMENT": "dev",
+-                    "BUCKET_NAME": "s3-demo-sds-dh-dev"
+-                }
+-            },
+-            "TracingConfig": {
+-                "Mode": "PassThrough"
+-            },
+-            "RevisionId": "42143e8f-51cc-49a8-94b7-f7137ab52ecc",
+-            "Layers": [
+-                {
+-                    "Arn": "arn:aws:lambda:us-east-1:000000000000:layer:layer-thumbnail-dev:1"
+-                }
+-            ],
+-            "State": "Active",
+-            "LastUpdateStatus": "Successful",
+-            "PackageType": "Zip",
+-            "Architectures": [
+-                "x86_64"
+-            ],
+-            "EphemeralStorage": {
+-                "Size": 512
+-            }
+-        },
+-        {
+-            "FunctionName": "generateThumbnailsFromPdf-dev",
+-            "FunctionArn": "arn:aws:lambda:us-east-1:000000000000:function:generateThumbnailsFromPdf-dev",
+-            "Runtime": "python3.10",
+-            "Role": "arn:aws:iam::000000000000:role/role-dh-lambda-dev",
+-            "Handler": "index.lambda_handler",
+-            "CodeSize": 229,
+-            "Description": "",
+-            "Timeout": 300,
+-            "MemorySize": 512,
+-            "LastModified": "2026-05-30T05:59:22.288+0000",
+-            "CodeSha256": "fRJhRWZPxxQx+sHBQJp0f+O8KeMnsWJXIPliV1lYyNM=",
+-            "Version": "$LATEST",
+-            "Environment": {
+-                "Variables": {
+-                    "ENVIRONMENT": "dev",
+-                    "BUCKET_NAME": "s3-demo-sds-dh-dev"
+-                }
+-            },
+-            "TracingConfig": {
+-                "Mode": "PassThrough"
+-            },
+-            "RevisionId": "7faf0966-d723-424c-913d-44db2a91c1a8",
+-            "Layers": [
+-                {
+-                    "Arn": "arn:aws:lambda:us-east-1:000000000000:layer:layer-thumbnail-dev:1"
+-                }
+-            ],
+-            "State": "Active",
+-            "LastUpdateStatus": "Successful",
+-            "PackageType": "Zip",
+-            "Architectures": [
+-                "x86_64"
+-            ],
+-            "EphemeralStorage": {
+-                "Size": 512
+-            }
+-        }
+-    ]
+-}

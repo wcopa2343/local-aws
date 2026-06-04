@@ -1,8 +1,3 @@
-variable "target_env" {
-  type    = string
-  default = "localstack"
-}
-
 variable "environment" {
   type = string
 }

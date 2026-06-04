@@ -21,7 +21,6 @@ module "messaging" {
 module "registry" {
   source      = "./modules/registry"
   environment = var.environment
-  target_env  = var.target_env
   common_tags = local.common_tags
 }
 
@@ -38,7 +37,6 @@ module "compute" {
   source                    = "./modules/compute"
   environment               = var.environment
   aws_region                = var.aws_region
-  target_env                = var.target_env
   common_tags               = local.common_tags
   lambda_execution_role_arn = module.security.lambda_execution_role_arn
   s3_bucket_name            = module.storage.bucket_name

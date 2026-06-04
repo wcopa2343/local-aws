@@ -1,4 +1,4 @@
 environment = "dev"
 aws_region  = "us-east-1"
-target_env  = "localstack"
-tf_endpoint = "http://localstack:4566"
+target_env  = "floci"
+tf_endpoint = "http://floci:4566"
