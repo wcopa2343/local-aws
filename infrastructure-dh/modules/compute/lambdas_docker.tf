@@ -8,8 +8,10 @@ resource "aws_lambda_function" "convert_html_to_pdf" {
 
   environment {
     variables = {
-      BUCKET_NAME = var.s3_bucket_name
-      ENVIRONMENT = var.environment
+      BUCKET_NAME                = var.s3_bucket_name
+      ENVIRONMENT                = var.environment
+      CONVERSION_TIMEOUT_SECONDS = "120"
+      MAX_FILE_SIZE_MB           = "50"
     }
   }
 
@@ -32,12 +34,14 @@ resource "aws_lambda_function" "convert_msdoc_to_pdf" {
   package_type  = "Image"
   image_uri     = "public.ecr.aws/lambda/python:3.10"
   timeout       = 300
-  memory_size   = 1024
+  memory_size   = 2048
 
   environment {
     variables = {
-      BUCKET_NAME = var.s3_bucket_name
-      ENVIRONMENT = var.environment
+      BUCKET_NAME                = var.s3_bucket_name
+      ENVIRONMENT                = var.environment
+      CONVERSION_TIMEOUT_SECONDS = "180"
+      MAX_FILE_SIZE_MB           = "60"
     }
   }
 

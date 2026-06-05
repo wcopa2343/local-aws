@@ -68,3 +68,28 @@ resource "aws_lambda_event_source_mapping" "pdf_trigger" {
   function_name    = aws_lambda_function.generate_thumbnails_from_pdf.arn
   batch_size       = 10
 }
+
+resource "aws_lambda_function" "split_pdf_to_images" {
+  function_name    = "SET-${var.environment}-splitPdfToImages"
+  role             = var.lambda_execution_role_arn
+  handler          = "index.lambda_handler"
+  runtime          = "python3.10"
+  timeout          = 120
+  memory_size      = 1024
+  filename         = data.archive_file.placeholder.output_path
+  source_code_hash = data.archive_file.placeholder.output_base64sha256
+  layers           = [aws_lambda_layer_version.thumbnail.arn]
+
+  environment {
+    variables = {
+      BUCKET_NAME = var.s3_bucket_name
+      ENVIRONMENT = var.environment
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+  }
+
+  tags = var.common_tags
+}
