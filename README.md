@@ -66,4 +66,4 @@ Opciones disponibles:
 
 ## Documentación
 
-- [COMANDOS_BASICOS.md](readme/COMANDOS_BASICOS.md) — comandos útiles para S3, Lambda, ECR, SQS y logs
+- [COMANDOS_BASICOS.md](COMANDOS_BASICOS.md) — comandos útiles para S3, Lambda, ECR, SQS y logs
