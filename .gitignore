@@ -28,3 +28,5 @@ infrastructure-dh/.terraform.lock.hcl
 infrastructure-dh/modules/compute/placeholder.zip
 
 lambdas-code-dh.zip
+lambdas-code-dh/*
+!lambdas-code-dh/.gitkeep
