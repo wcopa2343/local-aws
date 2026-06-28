@@ -12,7 +12,9 @@ cd ..\..
 docker-compose run --rm aws-cli lambda update-function-code ^
   --function-name generateThumbnailsFromImage-dev ^
   --zip-file fileb:///workspace/lambdas-code-dh/thumbnail-from-img/function.zip ^
-  --endpoint-url=%ENDPOINT%
+  --endpoint-url=%ENDPOINT% ^
+  --query FunctionArn ^
+  --output text
 
 echo [2/3] thumbnail-from-pdf...
 cd lambdas-code-dh\thumbnail-from-pdf
@@ -21,16 +23,20 @@ cd ..\..
 docker-compose run --rm aws-cli lambda update-function-code ^
   --function-name generateThumbnailsFromPdf-dev ^
   --zip-file fileb:///workspace/lambdas-code-dh/thumbnail-from-pdf/function.zip ^
-  --endpoint-url=%ENDPOINT%
+  --endpoint-url=%ENDPOINT% ^
+  --query FunctionArn ^
+  --output text
 
 echo [3/3] split-pdf...
 cd lambdas-code-dh\split-pdf
 if not exist function.zip powershell Compress-Archive -Force -Path index.py -DestinationPath function.zip
 cd ..\..
 docker-compose run --rm aws-cli lambda update-function-code ^
-  --function-name splitFromPdf-dev ^
+  --function-name SET-dev-splitPdfToImages ^
   --zip-file fileb:///workspace/lambdas-code-dh/split-pdf/function.zip ^
-  --endpoint-url=%ENDPOINT%
+  --endpoint-url=%ENDPOINT% ^
+  --query FunctionArn ^
+  --output text
 
 echo.
 echo ===== Deploy Docker Lambdas =====
@@ -44,10 +50,13 @@ cd ..\..
 docker-compose run --rm aws-cli lambda update-function-code ^
   --function-name SET-dev-Doodle-ConvertMsDocToPdf ^
   --image-uri pdf-converter-dev/document.conversion.office:latest ^
-  --endpoint-url=%ENDPOINT%
+  --endpoint-url=%ENDPOINT% ^
+  --query FunctionArn ^
+  --output text
 docker-compose run --rm aws-cli lambda get-function ^
   --function-name SET-dev-Doodle-ConvertMsDocToPdf ^
-  --endpoint-url=%ENDPOINT%
+  --endpoint-url=%ENDPOINT% ^
+  --output text
 
 echo [2/2] Building document-conversion-html...
 cd lambdas-code-dh\html-to-pdf
@@ -58,10 +67,13 @@ cd ..\..
 docker-compose run --rm aws-cli lambda update-function-code ^
   --function-name SET-dev-Doodle-ConvertHtmlToPdf ^
   --image-uri pdf-converter-dev/document.conversion.html:latest ^
-  --endpoint-url=%ENDPOINT%
+  --endpoint-url=%ENDPOINT% ^
+  --query FunctionArn ^
+  --output text
 docker-compose run --rm aws-cli lambda get-function ^
   --function-name SET-dev-Doodle-ConvertHtmlToPdf ^
-  --endpoint-url=%ENDPOINT%
+  --endpoint-url=%ENDPOINT% ^
+  --output text
 
 echo.
 echo ===== Done =====

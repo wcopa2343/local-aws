@@ -26,3 +26,5 @@ infrastructure-dh/.terraform.lock.hcl
 
 # Terraform — placeholder ZIP generado automáticamente por data archive_file
 infrastructure-dh/modules/compute/placeholder.zip
+
+lambdas-code-dh.zip
